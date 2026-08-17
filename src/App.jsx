@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth.jsx'
+import { useAuth } from '../hooks/useAuth'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { INITIAL_CLIENTS, COUPONS, REMINDERS, LOCATIONS } from '@/data/clients'
 import Layout from '@/components/Layout'
