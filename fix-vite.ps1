@@ -1,0 +1,59 @@
+# ============================================================
+# fix-vite.ps1  —  Fix Vite build errors on Windows
+# ============================================================
+
+Write-Host "`n[1] Finding .js files that contain JSX (need .jsx extension)..." -ForegroundColor Cyan
+$jsxInJs = Get-ChildItem -Path src -Recurse -Filter *.js | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    if ($content -match '<[A-Z]|<[a-z]+\s+[^>]*>') {
+        [PSCustomObject]@{
+            File = $_.FullName
+            Lines = ($content | Select-String '<[A-Z]|<[a-z]+\s+[^>]*>').LineNumber -join ', '
+        }
+    }
+}
+if ($jsxInJs) {
+    Write-Host "  FOUND these .js files with JSX:" -ForegroundColor Red
+    $jsxInJs | ForEach-Object { Write-Host "    $($_.File)" }
+    Write-Host "`n  Renaming them to .jsx..." -ForegroundColor Yellow
+    $jsxInJs | ForEach-Object {
+        $newName = $_.File -replace '\.js$', '.jsx'
+        Rename-Item -Path $_.File -NewName (Split-Path $newName -Leaf) -Force
+        Write-Host "    Renamed: $(Split-Path $_.File -Leaf) -> $(Split-Path $newName -Leaf)"
+    }
+} else {
+    Write-Host "  No .js files with JSX found." -ForegroundColor Green
+}
+
+Write-Host "`n[2] Fixing imports with .jsx extension in the path..." -ForegroundColor Cyan
+$filesWithBadImports = Get-ChildItem -Path src -Recurse -Include *.jsx,*.js | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    if ($content -match '\.jsx[''"]') {
+        $fixed = $content -replace '(\.jsx)([''"])', '$2'
+        Set-Content -Path $_.FullName -Value $fixed -NoNewline
+        [PSCustomObject]@{
+            File = $_.FullName
+        }
+    }
+}
+if ($filesWithBadImports) {
+    Write-Host "  Fixed imports in:" -ForegroundColor Green
+    $filesWithBadImports | ForEach-Object { Write-Host "    $($_.File)" }
+} else {
+    Write-Host "  No bad imports found." -ForegroundColor Green
+}
+
+Write-Host "`n[3] Running local Vite build to verify..." -ForegroundColor Cyan
+npm run build
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "`n✅ BUILD SUCCESS!" -ForegroundColor Green
+} else {
+    Write-Host "`n❌ BUILD FAILED — scroll up for the error." -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "`n[4] Committing and pushing..." -ForegroundColor Cyan
+git add -A
+git commit -m "fix: rename .js files with JSX to .jsx, clean imports"
+git push
+Write-Host "`n✅ Done! Check GitHub Actions." -ForegroundColor Green
