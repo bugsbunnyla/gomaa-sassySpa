@@ -31,3 +31,26 @@ export function getLastVisit(client) {
   if (!client.visits?.length) return null
   return [...client.visits].sort((a, b) => new Date(b.date) - new Date(a.date))[0]
 }
+
+export function getInTheChairLately(clients, limit = 8) {
+  return [...clients]
+    .filter(c => c.visits?.length)
+    .sort((a, b) => {
+      const aLast = getLastVisit(a)?.date || '1970-01-01'
+      const bLast = getLastVisit(b)?.date || '1970-01-01'
+      return new Date(bLast) - new Date(aLast)
+    })
+    .slice(0, limit)
+}
+
+export function getHaventBeenInAWhile(clients, threshold = 45) {
+  return clients.filter(c => {
+    const last = getLastVisit(c)
+    if (!last) return true
+    return getDaysSince(last.date) >= threshold
+  }).sort((a, b) => {
+    const aDays = getDaysSince(getLastVisit(a)?.date || '1970-01-01')
+    const bDays = getDaysSince(getLastVisit(b)?.date || '1970-01-01')
+    return bDays - aDays
+  })
+}
