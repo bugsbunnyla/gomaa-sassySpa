@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Home, Scissors, BarChart3, Megaphone, MapPin, Gift, LogOut, Menu, X } from 'lucide-react'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '../hooks/useAuth.jsx'
 import { cn } from '@/lib/utils'
 
 export default function Layout({ children }) {
