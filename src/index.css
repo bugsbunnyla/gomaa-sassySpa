@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 15% 6%;
+    --foreground: 220 10% 92%;
+    --card: 220 14% 10%;
+    --card-foreground: 220 10% 92%;
+    --popover: 220 14% 10%;
+    --popover-foreground: 220 10% 92%;
+    --primary: 43 85% 38%;
+    --primary-foreground: 220 15% 6%;
+    --secondary: 220 12% 16%;
+    --secondary-foreground: 220 10% 92%;
+    --muted: 220 12% 16%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 43 85% 38%;
+    --accent-foreground: 220 15% 6%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 10% 18%;
+    --input: 220 10% 18%;
+    --ring: 43 85% 38%;
+    --radius: 0.75rem;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overscroll-behavior-y: none;
+  }
+  h1, h2, h3, .font-display {
+    font-family: 'Playfair Display', Georgia, Cambria, serif;
+  }
+}
+
+@layer utilities {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
