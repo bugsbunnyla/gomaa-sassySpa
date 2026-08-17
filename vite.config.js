@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  base: '/gomaa-sassySpa/',        // ← ADD THIS LINE (use your repo name)
+  base: './',        // ← ADD THIS LINE (use your repo name)
   plugins: [react()],
   resolve: {
     alias: {
