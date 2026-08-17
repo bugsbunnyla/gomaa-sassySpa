@@ -57,3 +57,33 @@ git add -A
 git commit -m "fix: rename .js files with JSX to .jsx, clean imports"
 git push
 Write-Host "`n✅ Done! Check GitHub Actions." -ForegroundColor Green
+
+
+==== ran this  on powershell ===
+# Step 1: Find all .js files containing JSX and rename them
+Get-ChildItem -Path src -Recurse -Filter *.js | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    if ($content -match '<[A-Z]|<[a-z]+\s+[^>]*>') {
+        $newName = $_.FullName -replace '\.js$', '.jsx'
+        Rename-Item -Path $_.FullName -NewName (Split-Path $newName -Leaf) -Force
+        Write-Host "Renamed: $($_.Name) -> $((Split-Path $newName -Leaf))"
+    }
+}
+
+# Step 2: Fix all imports that have .jsx in the path
+Get-ChildItem -Path src -Recurse -Include *.jsx,*.js | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    if ($content -match '\.jsx[''"]') {
+        $fixed = $content -replace '(\.jsx)([''"])', '$2'
+        Set-Content -Path $_.FullName -Value $fixed -NoNewline
+        Write-Host "Fixed imports in: $($_.Name)"
+    }
+}
+
+# Step 3: Run local build to verify
+npm run build
+
+# Step 4: If build succeeds, commit and push
+git add -A
+git commit -m "fix: rename .js files with JSX to .jsx, clean imports"
+git push
